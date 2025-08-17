@@ -71,6 +71,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
+LOGIN_REDIRECT_URL = '/' #For task_list redirect 
+LOGOUT_REDIRECT_URL = 'login' #after logout user redirect to login page
+LOGIN_URL = 'login' #if user is not login should redirect to login page
+
+
+
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 

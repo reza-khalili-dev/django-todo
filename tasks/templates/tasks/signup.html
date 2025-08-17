@@ -1,0 +1,19 @@
+{% extends "tasks/base.html" %}
+
+{% block totle %}Sign up{% endblock totle %}
+
+
+
+{% block content %}
+<h1>Sign up</h1>
+
+<form action="" method="post">
+
+    {% csrf_token %}
+    {{form.as_p}}
+
+</form>
+
+<p>Already have an account?<a href="{% url 'login' %}">Login</a></p>
+
+{% endblock content %}
