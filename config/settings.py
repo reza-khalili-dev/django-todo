@@ -71,7 +71,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-LOGIN_REDIRECT_URL = '/' #For task_list redirect 
+LOGIN_REDIRECT_URL = 'task_list' #For task list redirect 
 LOGOUT_REDIRECT_URL = 'login' #after logout user redirect to login page
 LOGIN_URL = 'login' #if user is not login should redirect to login page
 

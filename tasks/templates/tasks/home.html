@@ -1,0 +1,26 @@
+{% extends "tasks/base.html" %}
+
+
+
+
+
+{% block content %}
+
+    <h2>Welcome {{user.username}}</h2>
+
+    {% if user.is_authenticated %}
+
+        <p>You are logged in.</p>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+            
+
+    {% else %}
+
+        <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'signup' %}">signup</a>.</p>
+
+    {% endif %}
+
+{% endblock content %}
