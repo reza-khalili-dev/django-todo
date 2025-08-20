@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.shortcuts import redirect
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
@@ -22,7 +24,6 @@ class TaskListView(LoginRequiredMixin,ListView):
     template_name = 'tasks/task_list.html'
     context_object_name = 'tasks'
     
-    #just for shows tasks to login user
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user).order_by('due_date')
 
@@ -32,10 +33,13 @@ class TaskCreateView(LoginRequiredMixin,CreateView):
     template_name = 'tasks/task_form.html'
     success_url = reverse_lazy('task_list')
     
-    
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        messages.success(self.request,'Task created successfully.')
+        return response
+    
     
 class TaskUpdateView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
     model = Task
@@ -50,13 +54,22 @@ class TaskUpdateView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
         task = self.get_object()
         return task.user == self.request.user    
     
+    def form_valid(self, form):
+        messages.success(self.request,'Task Updated successfully.')
+        return super().form_valid(form)
     
-class TaskDeleteView(LoginRequiredMixin,DeleteView):
+
+class TaskDeleteView(LoginRequiredMixin, DeleteView):
     model = Task
-    template_name = 'tasks/task_confirm_delete.html'
-    success_url = reverse_lazy('task_list')
+    template_name = "tasks/task_confirm_delete.html"
+    success_url = reverse_lazy("task_list")
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(request, f"Task '{obj.title}' deleted successfully.")
+        return super().delete(request, *args, **kwargs)
     
-    
+

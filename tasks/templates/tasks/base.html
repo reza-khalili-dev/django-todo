@@ -4,39 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Django ToDo{% endblock title %}</title>
+    <style>
+        .message { padding: .75rem 1rem; border-radius: .5rem; margin: .5rem 0; }
+        .message.success { background: #e6ffed; border: 1px solid #8ce3a0; }
+        .message.error   { background: #ffe6e6; border: 1px solid #ff9b9b; }
+        .message.warning { background: #fff7e6; border: 1px solid #ffd28c; }
+        .message.info    { background: #e6f0ff; border: 1px solid #9bbcff; }
+    </style>
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a>
+    <header>
+        <nav>
+            <a href="/">Home</a>
 
-        {% if user.is_authenticated %}
-
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-            </form>
-
-        {% else %}
-
-            <a href="{% url 'login' %}">Login</a>
-
-            <a href="{% url 'signup' %}">Signup</a>
-
-        {% endif %}
-        
-    </nav>
-
+            {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </nav>
+    </header>
     <hr>
 
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{message}}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-        
-    {% block content %}{% endblock content %}
+    <main>
+        {% include "tasks/_messages.html" %}
+        {% block content %}{% endblock content %}
+    </main> 
 </body>
 </html>

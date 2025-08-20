@@ -1,0 +1,11 @@
+
+
+{% if messages %}
+  <div>
+    {% for message in messages %}
+        <div class="message {{message.tags}}">{# success / error / warning / info #}
+            {{message}}
+        </div>
+    {% endfor %}
+  </div>
+{% endif %}
