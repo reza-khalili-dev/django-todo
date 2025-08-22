@@ -44,7 +44,7 @@ class TaskCreateView(LoginRequiredMixin,CreateView):
 class TaskUpdateView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
     model = Task
     form_class = TaskForm
-    template_name = 'tasks/task_update.html'
+    template_name = 'tasks/task_form.html'
     success_url = reverse_lazy('task_list')
     
     def get_queryset(self):
