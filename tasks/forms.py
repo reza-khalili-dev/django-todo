@@ -23,4 +23,6 @@ class TaskForm(forms.ModelForm):
         due_date = self.cleaned_data.get('due_date')
         if due_date and due_date < timezone.now().date():
             raise forms.ValidationError('The date of entry cannot be in the past.')
-        return due_date        
+        return due_date
+    
+    
