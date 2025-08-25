@@ -16,7 +16,7 @@ class Task(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True,null=True)
+    description = models.TextField(blank=True,null=False)
     is_completed = models.BooleanField(default=False)
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES,default='M')
     due_date = models.DateField(blank=True,null=True)

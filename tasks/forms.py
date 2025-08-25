@@ -25,4 +25,4 @@ class TaskForm(forms.ModelForm):
             raise forms.ValidationError('The date of entry cannot be in the past.')
         return due_date
     
-    
+
