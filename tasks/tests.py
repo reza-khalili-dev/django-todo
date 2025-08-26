@@ -1,10 +1,12 @@
-from django.test import TestCase , SimpleTestCase
+from django.test import TestCase 
 from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from .models import Task
 from .forms import TaskForm
+
 
 
 # Create your tests here.
@@ -73,3 +75,44 @@ class TaskFormTest(TestCase):
         self.assertFalse(form.is_valid(), f'Form should not be valid without a title{form.errors}')
         self.assertIn('title',form.errors , 'Title error should be raised')
 
+class TaskViewTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='1234')
+        
+
+        self.task = Task.objects.create(
+            user = self.user,
+            title = 'sample title',
+            description = 'sample description',
+            is_completed=False,
+            priority = 'M',
+            due_date = timezone.now() + timedelta(days=2),
+        )
+    
+    def test_redirect_if_not_logged_in(self):
+        url = reverse("task_list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302) 
+        self.assertTrue(response.url.startswith(reverse("login")))
+    
+    def test_logged_in_user_can_see_tasks(self):
+        self.client.login(username='testuser', password='1234')
+        url = reverse("task_list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,'sample title')
+
+    def test_logged_in_user_can_create_task(self):
+        self.client.login(username='testuser', password='1234')
+        url = reverse('task_create')
+        response = self.client.post(url,{
+            'title':'new task',
+            'description':'Invalid new task',
+            'is_completed':False,
+            'priority':'M',
+            'due_date':(timezone.now() + timedelta(days=2)).date(),
+        })
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(Task.objects.filter(title='new task').exists())
+
+        
