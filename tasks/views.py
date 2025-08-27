@@ -1,18 +1,13 @@
 from django.contrib import messages
-from django.shortcuts import redirect
-from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse_lazy
-from django.views.generic import (
-    CreateView,
-    TemplateView,
-    ListView,
-    UpdateView,
-    DeleteView,
-)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Task
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import (CreateView, DeleteView, ListView,
+                                  TemplateView, UpdateView)
+
 from .forms import TaskForm
+from .models import Task
 
 # Create your views here.
 
