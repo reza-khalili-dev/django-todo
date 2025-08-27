@@ -1,4 +1,4 @@
-from django.test import TestCase 
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
@@ -79,7 +79,6 @@ class TaskViewTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='1234')
         
-
         self.task = Task.objects.create(
             user = self.user,
             title = 'sample title',
@@ -88,6 +87,7 @@ class TaskViewTest(TestCase):
             priority = 'M',
             due_date = timezone.now() + timedelta(days=2),
         )
+        self.other_user = User.objects.create_user(username='otheruser', password='abcd')
     
     def test_redirect_if_not_logged_in(self):
         url = reverse("task_list")
@@ -115,4 +115,43 @@ class TaskViewTest(TestCase):
         self.assertEqual(response.status_code,302)
         self.assertTrue(Task.objects.filter(title='new task').exists())
 
-        
+    def test_logged_in_user_can_update_task(self):
+        self.client.login(username='testuser', password='1234')
+        url = reverse('task_update',args=[self.task.id])
+        response = self.client.post(url,{
+            'title':'updated task',
+            'description':'updated task description',
+            'is_completed':True,
+            'priority':'M',
+            'due_date':(timezone.now() + timedelta(days=3)).date(),
+        })
+        self.assertEqual(response.status_code,302)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.title,'updated task')
+        self.assertTrue(self.task.is_completed)
+
+    def test_user_cannot_update_others_task(self):
+        login = self.client.login(username='otheruser', password='abcd')
+        self.assertTrue(login)
+        url = reverse('task_update',args=[self.task.id])
+        response = self.client.post(url,{
+            'title':'hacked task',
+            'description':'hacked task description',
+        })
+        self.assertIn(response.status_code, [403, 404])
+        self.task.refresh_from_db()
+        self.assertNotEqual(self.task.title,'hacked task')
+    
+    def test_logged_in_user_can_delete_task(self):
+        self.client.login(username='testuser', password='1234')
+        url = reverse('task_delete', args=[self.task.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Task.objects.filter(id=self.task.id).exists())
+
+    def test_user_cannot_delete_others_task(self):
+        self.client.login(username='otheruser', password='abcd')
+        url = reverse('task_delete', args=[self.task.id])
+        response = self.client.post(url)
+        self.assertIn(response.status_code, [403, 404])
+        self.assertTrue(Task.objects.filter(id=self.task.id).exists())
