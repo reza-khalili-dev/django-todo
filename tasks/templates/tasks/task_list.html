@@ -1,10 +1,21 @@
-
 {% extends "tasks/base.html" %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>My Tasks</h2>
     <a href="{% url 'task_create' %}" class="btn btn-primary">+ Add Task</a>
+</div>
+
+<div class="mb-3">
+    <span>Filter by Priority:</span>
+    <a href="{% url 'task_list' %}" class="btn btn-sm btn-outline-secondary {% if not priority_filter %}active{% endif %}">All</a>
+    <a href="?priority=L" class="btn btn-sm btn-outline-success {% if priority_filter == 'L' %}active{% endif %}">Low</a>
+    <a href="?priority=M" class="btn btn-sm btn-outline-warning {% if priority_filter == 'M' %}active{% endif %}">Medium</a>
+    <a href="?priority=H" class="btn btn-sm btn-outline-danger {% if priority_filter == 'H' %}active{% endif %}">High</a>
+
+    <span class="ms-3">Sort by:</span>
+    <a href="?sort=due_date" class="btn btn-sm btn-outline-primary {% if sort_order == 'due_date' %}active{% endif %}">Due Date</a>
+    <a href="?sort=created_at" class="btn btn-sm btn-outline-primary {% if sort_order == 'created_at' %}active{% endif %}">Created At</a>
 </div>
 
 <table class="table table-hover table-bordered bg-white shadow-sm">
@@ -31,7 +42,13 @@
                     {% endif %}
                 </td>
                 <td>
-                    <span class="badge bg-info text-dark">{{ task.get_priority_display }}</span>
+                    {% if task.priority == 'H' %}
+                        <span class="badge bg-danger">{{ task.get_priority_display }}</span>
+                    {% elif task.priority == 'M' %}
+                        <span class="badge bg-warning text-dark">{{ task.get_priority_display }}</span>
+                    {% else %}
+                        <span class="badge bg-success">{{ task.get_priority_display }}</span>
+                    {% endif %}
                 </td>
                 <td>
                     {% if task.due_date %}

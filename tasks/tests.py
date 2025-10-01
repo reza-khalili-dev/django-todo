@@ -110,6 +110,19 @@ class TaskViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "sample title")
 
+    def test_task_list_filter_by_priority(self):
+        self.client.login(username="testuser", password="1234")
+        
+        Task.objects.create(user=self.user, title="High Task", priority="H", due_date=timezone.now().date() + timedelta(days=2))
+        Task.objects.create(user=self.user, title="Low Task", priority="L", due_date=timezone.now().date() + timedelta(days=2))
+
+        url = reverse("task_list") + "?priority=H"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "High Task")
+        self.assertNotContains(response, "Low Task")
+
+
     def test_logged_in_user_can_create_task(self):
         self.client.login(username="testuser", password="1234")
         url = reverse("task_create")
@@ -172,3 +185,14 @@ class TaskViewTest(TestCase):
         response = self.client.post(url)
         self.assertIn(response.status_code, [403, 404])
         self.assertTrue(Task.objects.filter(id=self.task.id).exists())
+
+    def test_task_list_sorting(self):
+        self.client.login(username="testuser", password="1234")
+        
+        Task.objects.create(user=self.user, title="Task 1", due_date=timezone.now().date() + timedelta(days=5))
+        Task.objects.create(user=self.user, title="Task 2", due_date=timezone.now().date() + timedelta(days=1))
+
+        url = reverse("task_list") + "?sort=due_date"
+        response = self.client.get(url)
+        tasks = response.context["tasks"]
+        self.assertEqual(tasks[0].title, "Task 2")  # نزدیک‌ترین تاریخ باید اول باشد
