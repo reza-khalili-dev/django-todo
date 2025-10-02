@@ -28,7 +28,27 @@ class TaskListView(LoginRequiredMixin, ListView):
     context_object_name = "tasks"
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user).order_by("due_date")
+        queryset = Task.objects.filter(user=self.request.user)
+
+
+        priority = self.request.GET.get("priority")
+        if priority in ["L", "M", "H"]:
+            queryset = queryset.filter(priority=priority)
+
+       
+        sort = self.request.GET.get("sort")
+        if sort in ["due_date", "created_at"]:
+            queryset = queryset.order_by(sort)
+        else:
+            queryset = queryset.order_by("due_date")
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['priority_filter'] = self.request.GET.get("priority", "")
+        context['sort_order'] = self.request.GET.get("sort", "due_date")
+        return context
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
