@@ -196,3 +196,21 @@ class TaskViewTest(TestCase):
         response = self.client.get(url)
         tasks = response.context["tasks"]
         self.assertEqual(tasks[0].title, "Task 2")  # نزدیک‌ترین تاریخ باید اول باشد
+
+
+class AuthTests(TestCase):
+    def test_signup_create_user(self):
+        resp = self.client.post(reverse("signup"), {
+            "username":"testuser",
+            "email":"t@test.com",
+            "password1":"ComplexPass123!",
+            "password2":"ComplexPass123!"
+        })
+        # after signup, should redirect to login
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(User.objects.filter(username="testuser").exists())
+
+    def test_login(self):
+        User.objects.create_user(username="u1", password="pwdStrong1!")
+        resp = self.client.post(reverse("login"), {"username":"u1","password":"pwdStrong1!"})
+        self.assertIn(resp.status_code, (302, 301))

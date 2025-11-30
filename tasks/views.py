@@ -6,14 +6,13 @@ from django.urls import reverse_lazy
 from django.views.generic import (CreateView, DeleteView, ListView,
                                   TemplateView, UpdateView)
 
-from .forms import TaskForm
+from .forms import TaskForm,SignUpForm,LoginForm
 from .models import Task
 
+
 # Create your views here.
-
-
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = SignUpForm        # use our form with bootstrap attrs
     template_name = "tasks/signup.html"
     success_url = reverse_lazy("login")
 
