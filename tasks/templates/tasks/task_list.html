@@ -6,16 +6,28 @@
     <a href="{% url 'task_create' %}" class="btn btn-primary">+ Add Task</a>
 </div>
 
+<form method="get" action="{% url 'task_list' %}" class="mb-3">
+    <input type="hidden" name="priority" value="{{ priority_filter }}">
+    <input type="hidden" name="sort" value="{{ sort_order }}">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Search tasks by title or description..." value="{{ search_query|default:'' }}">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+        {% if search_query %}
+        <a href="?priority={{ priority_filter }}&sort={{ sort_order }}" class="btn btn-outline-danger">Clear</a>
+        {% endif %}
+    </div>
+</form>
+
 <div class="mb-3">
     <span>Filter by Priority:</span>
-    <a href="{% url 'task_list' %}" class="btn btn-sm btn-outline-secondary {% if not priority_filter %}active{% endif %}">All</a>
-    <a href="?priority=L" class="btn btn-sm btn-outline-success {% if priority_filter == 'L' %}active{% endif %}">Low</a>
-    <a href="?priority=M" class="btn btn-sm btn-outline-warning {% if priority_filter == 'M' %}active{% endif %}">Medium</a>
-    <a href="?priority=H" class="btn btn-sm btn-outline-danger {% if priority_filter == 'H' %}active{% endif %}">High</a>
+    <a href="?search={{ search_query }}{% if priority_filter or sort_order %}&priority={{ priority_filter }}&sort={{ sort_order }}{% endif %}" class="btn btn-sm btn-outline-secondary {% if not priority_filter %}active{% endif %}">All</a>
+    <a href="?priority=L&search={{ search_query }}{% if sort_order %}&sort={{ sort_order }}{% endif %}" class="btn btn-sm btn-outline-success {% if priority_filter == 'L' %}active{% endif %}">Low</a>
+    <a href="?priority=M&search={{ search_query }}{% if sort_order %}&sort={{ sort_order }}{% endif %}" class="btn btn-sm btn-outline-warning {% if priority_filter == 'M' %}active{% endif %}">Medium</a>
+    <a href="?priority=H&search={{ search_query }}{% if sort_order %}&sort={{ sort_order }}{% endif %}" class="btn btn-sm btn-outline-danger {% if priority_filter == 'H' %}active{% endif %}">High</a>
 
     <span class="ms-3">Sort by:</span>
-    <a href="?sort=due_date" class="btn btn-sm btn-outline-primary {% if sort_order == 'due_date' %}active{% endif %}">Due Date</a>
-    <a href="?sort=created_at" class="btn btn-sm btn-outline-primary {% if sort_order == 'created_at' %}active{% endif %}">Created At</a>
+    <a href="?sort=due_date&search={{ search_query }}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}" class="btn btn-sm btn-outline-primary {% if sort_order == 'due_date' %}active{% endif %}">Due Date</a>
+    <a href="?sort=created_at&search={{ search_query }}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}" class="btn btn-sm btn-outline-primary {% if sort_order == 'created_at' %}active{% endif %}">Created At</a>
 </div>
 
 <table class="table table-hover table-bordered bg-white shadow-sm">

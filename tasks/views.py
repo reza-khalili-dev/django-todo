@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import (CreateView, DeleteView, ListView,
@@ -29,12 +30,16 @@ class TaskListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Task.objects.filter(user=self.request.user)
 
+        search = self.request.GET.get("search", "").strip()
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) | Q(description__icontains=search)
+            )
 
         priority = self.request.GET.get("priority")
         if priority in ["L", "M", "H"]:
             queryset = queryset.filter(priority=priority)
 
-       
         sort = self.request.GET.get("sort")
         if sort in ["due_date", "created_at"]:
             queryset = queryset.order_by(sort)
@@ -47,6 +52,7 @@ class TaskListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['priority_filter'] = self.request.GET.get("priority", "")
         context['sort_order'] = self.request.GET.get("sort", "due_date")
+        context['search_query'] = self.request.GET.get("search", "")
         return context
 
 
