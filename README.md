@@ -1,5 +1,7 @@
 # Django To-Do App
 
+**Version: 1.1.0**
+
 A full-featured **Django To-Do List** application with user authentication, task management, and priority tracking. Designed for clean code, security, and scalability.
 
 ---
